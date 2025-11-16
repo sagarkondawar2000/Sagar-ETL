@@ -13,6 +13,10 @@ resource "aws_iam_role" "glue_role" {
       }
     ]
   })
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "glue_s3_full_access" {
@@ -40,6 +44,10 @@ resource "aws_iam_role" "lambda_role" {
       }
     ]
   })
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "aws_iam_role_policy" "lambda_policy" {

@@ -1,5 +1,9 @@
 resource "aws_s3_bucket" "etl_bucket" {
   bucket = var.bucket_name
+
+  lifecycle {
+    ignore_changes = all
+  }
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {
