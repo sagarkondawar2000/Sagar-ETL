@@ -46,14 +46,47 @@ jobs:
       run: terraform init -input=false
 
     # -------------------------------------------------------------------
-    # 5. TERRAFORM PLAN
+    # 5. SELECT WORKSPACE BASED ON BRANCH
     # -------------------------------------------------------------------
-    - name: Terraform Plan
-      run: terraform plan -out=tfplan
+    - name: Select Workspace
+      run: |
+        BRANCH_NAME="${GITHUB_REF##*/}"
+
+        if [[ "$BRANCH_NAME" == "main" ]]; then
+          terraform workspace select prod || terraform workspace new prod
+        else
+          terraform workspace select dev || terraform workspace new dev
+        fi
 
     # -------------------------------------------------------------------
-    # 9. APPLY ON DEV BRANCH
+    # 6. TERRAFORM FMT LINT
     # -------------------------------------------------------------------
-    - name: Terraform Apply (dev only)
-      if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
-      run: terraform apply -auto-approve
+    - name: Terraform Format Check
+      run: terraform fmt -check
+
+    # -------------------------------------------------------------------
+    # 7. VALIDATE TERRAFORM SYNTAX
+    # -------------------------------------------------------------------
+    - name: Terraform Validate
+      run: terraform validate
+
+    # -------------------------------------------------------------------
+    # 8. PLAN ALWAYS
+    # -------------------------------------------------------------------
+    - name: Terraform Plan
+      run: |
+        BRANCH_NAME="${GITHUB_REF##*/}"
+        terraform plan -var="env=$BRANCH_NAME"
+
+    # -------------------------------------------------------------------
+    # 9. APPLY ONLY ON MAIN (PRODUCTION)
+    # -------------------------------------------------------------------
+    - name: Terraform Apply (main only)
+      if: >
+        github.ref == 'refs/heads/main' ||
+        (github.event_name == 'pull_request' &&
+         github.event.action == 'closed' &&
+         github.event.pull_request.merged == true &&
+         github.base_ref == 'main')
+      run: terraform apply -auto-approve -var="env=prod"
+
