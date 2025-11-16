@@ -1,9 +1,9 @@
 resource "aws_lambda_function" "s3_trigger_lambda" {
-  filename      = "lambda_function.zip"
-  function_name = "s3-to-glue-trigger"
-  role          = aws_iam_role.lambda_role.arn
-  handler       = "index.lambda_handler"
-  runtime       = "python3.11"
+  filename         = "lambda_function.zip"
+  function_name    = "s3-to-glue-trigger"
+  role             = aws_iam_role.lambda_role.arn
+  handler          = "index.lambda_handler"
+  runtime          = "python3.11"
   source_code_hash = filebase64sha256("lambda_function.zip")
 }
 
