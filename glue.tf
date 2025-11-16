@@ -1,3 +1,4 @@
+#glue Job for Salary Filter ETL Process
 resource "aws_glue_job" "salary_filter_job" {
   name     = "salary-filter-job"
   role_arn = aws_iam_role.glue_role.arn
