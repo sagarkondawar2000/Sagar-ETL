@@ -1,3 +1,4 @@
+# IAM Role for AWS Glue Job
 resource "aws_iam_role" "glue_role" {
   name = "glue-etl-salary-job-role"
   assume_role_policy = jsonencode({
